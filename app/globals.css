@@ -3,7 +3,7 @@
 @import "tailwindcss";
 /* optional animations plugin removed; install 'tailwindcss-animate' and use @plugin if needed */
 
-/* Dark variant kısayolu (v4) */
+/* Dark variant helper (v4) */
 /*@custom-variant dark (&:is(.dark *));*/
 
 /* ----- Design tokens (oklch) ----- */
@@ -160,7 +160,7 @@
   button { }
 }
 
-/* ---- Senin yardımcı sınıfların (v4 uyumlu) ---- */
+/* ---- Helper utility classes (Tailwind v4 compatible) ---- */
 .soft-card{
   @apply rounded-2xl border border-border bg-card backdrop-blur-xl shadow-[0_10px_30px_-10px_rgba(0,0,0,.15)];
 }

@@ -16,6 +16,7 @@ export default function ThemeToggle() {
   useEffect(() => { setMounted(true); }, []);
 
   const label = theme === "dark" ? LABELS.dark : LABELS.light;
+  // Keep server and client markup identical by rendering a static icon/text until mounted
   const shortIcon = mounted ? label.short : LABELS.light.short;
   const text = mounted ? (label.text[lang] ?? label.text.en) : (lang === "tr" ? "Aydınlık" : "Light");
 

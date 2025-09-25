@@ -24,6 +24,7 @@ function resolveInitialTheme(): Theme {
 }
 
 export default function ThemeProvider({ children }: { children: React.ReactNode }) {
+  // Keep DOM classes/storage in sync whenever we flip the theme
   const applyTheme = useCallback((next: Theme) => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
@@ -53,6 +54,7 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
   }, [applyTheme]);
 
   const toggleTheme = useCallback(() => {
+    // Expose a convenient toggle so buttons do not reimplement the flip logic
     setThemeState(prev => {
       const next = prev === "dark" ? "light" : "dark";
       applyTheme(next);

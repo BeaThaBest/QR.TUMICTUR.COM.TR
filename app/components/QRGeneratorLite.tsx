@@ -33,6 +33,7 @@ const INACTIVE_BUTTON = "hover:bg-primary/10 hover:border-primary/40 hover:text-
 export default function QRGeneratorLite() {
   const { lang } = useLang();
   const t = (tr:string,en:string)=> lang==='tr'?tr:en;
+  // Group UI state by feature so it is easy for future editors to reason about updates
   const [dlSel, setDlSel] = useState<"PNG"|"JPG"|"SVG"|"WebP"|"PDF"|null>(null);
   const [active, setActive] = useState<TypeId>("url");
   const [content, setContent] = useState("");
@@ -62,6 +63,7 @@ export default function QRGeneratorLite() {
 
   const renderJob = useRef(0);
 
+  // Render the QR code into the hidden canvas; abort stale jobs when inputs change quickly
   const render = useCallback(async (text: string) => {
     const jobId = ++renderJob.current;
     const canvas = canvasRef.current;
@@ -95,6 +97,7 @@ export default function QRGeneratorLite() {
     }
   }, [bg, ecc, fg, size]);
 
+  // Re-render only after the user pauses typing to minimize canvas churn
   useDebouncedEffect(() => {
     if (!payload.trim()) {
       renderJob.current += 1;

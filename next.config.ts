@@ -3,7 +3,7 @@
 const nextConfig = {
   experimental: {
     turbopack: {
-      // projenin kökü bu klasör
+      // point Turbopack at the repository root directory
       root: ".",
     },
   },

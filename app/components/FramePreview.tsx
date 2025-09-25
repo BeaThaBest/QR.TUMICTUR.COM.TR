@@ -33,13 +33,14 @@ export default function FramePreview({ frame, label, qrRef, labelColor = "#fffff
   const cardHeading = hasLabel ? trimmedLabel : (lang === "tr" ? "Şirketiniz" : "YourCompany");
   const phonePrompt = hasLabel ? trimmedLabel : (lang === "tr" ? "Kamerayı Aç → Tara" : "Open Camera → Scan");
 
-  // Dışarıdan gelen ref'e içteki ref'i bağla
+  // Bridge the ref provided by parents to the underlying StylishQR instance
   useEffect(() => {
     if (!qrRef) return;
     qrRef.current = localRef.current;
     return () => { if (qrRef) qrRef.current = null; };
   }, [qrRef]);
 
+  // Compute a scale factor so every frame variant fits its container
   const recalcScale = useCallback(() => {
     const container = containerRef.current;
     const frameEl = frameRef.current;
@@ -89,6 +90,7 @@ export default function FramePreview({ frame, label, qrRef, labelColor = "#fffff
     qr.data,
   ]);
 
+  // Watch container size and recompute scale when the layout changes
   useEffect(() => {
     if (typeof ResizeObserver === "undefined") return;
     if (!containerRef.current) return;
@@ -97,6 +99,7 @@ export default function FramePreview({ frame, label, qrRef, labelColor = "#fffff
     return () => observer.disconnect();
   }, [recalcScale]);
 
+  // Also watch the frame wrapper itself so gradient/label changes keep scaling correct
   useEffect(() => {
     if (typeof ResizeObserver === "undefined") return;
     if (!frameRef.current) return;

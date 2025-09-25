@@ -10,7 +10,7 @@ import PhoneInput from "./PhoneInput";
 import { incrementQrCount } from "../lib/qrMetrics";
 
 
-/* ---------- payload helpers (senin mantık) ---------- */
+/* ---------- Payload helpers (core business logic) ---------- */
 type QRType =
   | "url" | "text" | "email" | "phone" | "sms"
   | "whatsapp" | "skype" | "zoom" | "wifi"
@@ -106,7 +106,7 @@ function buildPayload(kind:QRType, f:any):string{
   }
 }
 
-/* ---------- UI Schema ---------- */
+/* ---------- UI schema ---------- */
 const TYPES_EN:{key:QRType;label:string}[]=[
   {key:"url",label:"URL"},{key:"text",label:"Text"},{key:"email",label:"E‑mail"},
   {key:"phone",label:"Call"},{key:"sms",label:"SMS"},{key:"whatsapp",label:"WhatsApp"},
@@ -264,11 +264,11 @@ const WIDE_FIELD_KEYS = new Set([
 export default function QRFullMode(){
   const { lang } = useLang();
   const t = (tr:string, en:string)=> lang==='tr'?tr:en;
-  // içerik
+  // QR payload inputs (what content will be encoded)
   const [kind,setKind]=useState<QRType>("vcard");
   const [form,setForm]=useState<Record<string,any>>({version:"3.0"});
 
-  // tasarım
+  // Visual styling options pushed into StylishQR
   const [size,setSize]=useState(360);
   const [margin,setMargin]=useState(2);
   const [fg,setFg]=useState("#111827");
@@ -286,7 +286,7 @@ export default function QRFullMode(){
   const [utmMedium,setUtmMedium]=useState("");
   const [utmCampaign,setUtmCampaign]=useState("");
 
-  // shape / köşeler
+  // Shape controls for QR dots and finder patterns
   const [styleType,setStyleType]=useState<"square"|"dots"|"rounded"|"classy"|"classy-rounded"|"extra-rounded">("square");
   const [cornerSquareType,setCornerSquareType]=useState<"square"|"dot"|"extra-rounded">("square");
   const [cornerDotType,setCornerDotType]=useState<"square"|"dot"|"extra-rounded">("square");
@@ -307,6 +307,7 @@ export default function QRFullMode(){
   const qrHandle = useRef<StylishQRHandle|null>(null);
 
   const TYPES = (lang==='tr'? TYPES_TR : TYPES_EN);
+  // Pull the form definition that matches the selected QR type and locale
   const schema=(lang==='tr'? SCHEMAS_TR : SCHEMAS_EN)[kind];
   const buildMultiRedirectUrl=(f:any)=>{
     const origin = typeof window!=="undefined" ? window.location.origin : "";
@@ -404,6 +405,7 @@ export default function QRFullMode(){
     if(p.frame) setFrame(p.frame);
   };
 
+  // Auto-apply a branded logo if the chosen preset suggests one
   useEffect(() => {
     if (!autoLogoCandidate) {
       return;
@@ -416,6 +418,7 @@ export default function QRFullMode(){
     }
   }, [autoLogoCandidate, logoSource, suppressedAutoLogo]);
 
+  // Reset the auto-logo suppression once the suggestion goes away
   useEffect(() => {
     if (!autoLogoCandidate && suppressedAutoLogo) {
       setSuppressedAutoLogo(null);
@@ -433,7 +436,7 @@ export default function QRFullMode(){
   return (
     <div className="max-w-6xl mx-auto px-6">
       <div className="grid gap-6 lg:grid-cols-12">
-        {/* SOL: içerik + ayarlar */}
+        {/* Left column: content inputs + design controls */}
         <section className="space-y-5 lg:col-span-7 lg:pr-4">
           {/* Step 1 */}
           <div className="soft-card p-6 shadow-sm space-y-5">
@@ -728,7 +731,7 @@ export default function QRFullMode(){
           </div>
         </section>
 
-        {/* SAĞ: önizleme + frame */}
+      {/* Right column: live preview + frame options */}
         <aside className="lg:sticky lg:top-24 h-fit self-start w-full lg:col-span-5">
           <div className="soft-card p-6 shadow-lg flex flex-col gap-5">
             <div className="flex items-center gap-3">
@@ -736,7 +739,7 @@ export default function QRFullMode(){
               <h3 className="text-lg font-semibold tracking-tight text-foreground">{t('QR Kod Önizleme','QR Code Preview')}</h3>
             </div>
 
-            {/* Merkezi Frame component'i ile önizleme */}
+            {/* Feed the current props into FramePreview for a styled mockup */}
             <div className="flex justify-center">
               <div className="w-full max-w-[420px]">
                 <FramePreview
